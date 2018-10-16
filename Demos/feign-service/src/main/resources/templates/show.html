@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="./js/jquery-1.12.4.js"></script>
+<script>
+
+    $(function () {
+        show();
+    });
+    function del() {
+        var data=$("#_id").val();
+        if(confirm("确定删除吗")){
+            $.ajax({
+                "url":"del",
+                "type":"get",
+                "data":{"id":data},
+                "dataType":"json",
+                "success":function (result) {
+                    if(result>0){
+                        alert("删除成功");
+                        show();
+                    }else{
+                        alert("删除失败");
+                    }
+                },
+                "error":function () {
+                    alert("数据库异常");
+                }
+
+            });
+        }
+    }
+    function show() {
+
+        $("#info").html("");
+        $.ajax({
+            "url":"getAll",
+            "type":"post",
+            "dataType":"json",
+            "success":function (result) {
+                var str="<tr><td>图书编号</td><td>图书名称</td><td>图书摘要</td><td>上传人</td><td>上传时间</td><td>操作</td></tr><br/>";
+                $(result).each(function () {
+                    str+="<input type=\"hidden\" name=\"id\" value='"+this.id+"' id='_id'/>";
+                    str+="<tr><td>"+this.id+"</td>&nbsp;&nbsp;<td>"+this.title+"</td>&nbsp;<td>"+this.summary+"</td>&nbsp;<td>"+this.uploadUser+"</td>&nbsp;<td>"+this.createDate+"</td><td><a href='javascript:void(0)' onclick='del()'>删除</a><a href='upd'>修改</a></td></tr><br/>";
+
+                })
+                $("#info").append(str);
+            },
+            "error":function () {
+                alert("数据库异常")
+            }
+        });
+    }
+    function sel() {
+
+        var data=$("#sel").val();
+        $.ajax({
+            "url":"selId",
+            "type":"get",
+            "data":{"id":data},
+            "dataType":"json",
+            "success":function (result) {
+                var str="<tr><td>图书编号</td><td>图书名称</td><td>图书摘要</td><td>上传人</td><td>上传时间</td><td>操作</td></tr><br/>";
+                $(result).each(function () {
+                    str+="<tr><td>"+this.id+"</td><td>"+this.title+"</td><td>"+this.summary+"</td><td>"+this.uploadUser+"</td><td>"+this.createDate+"</td><td><a href='javascript:void(0)' onclick='del()'>删除</a><a href='upd'>修改</a></td></tr><br/>";
+                    $("tr:even").css("background-color","red");
+                })
+                $("#info").html(str);
+
+            },
+            "error":function () {
+                alert("数据库异常")
+            }
+        });
+    }
+</script>
+<body>
+图书分类：
+<a href="addInfo">新增电子图书</a>
+<h2>电子图书列表</h2>
+<table id="info">
+
+
+</table>
+</body>
+</html>
